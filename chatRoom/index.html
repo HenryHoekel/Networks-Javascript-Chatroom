@@ -1,0 +1,48 @@
+<!--
+  Henry Hoekel
+  14207985
+  December 2nd, 2017
+  Chat room written for multiple users to use at once with client
+  and server side relations.
+
+  Uses sockets.io
+-->
+
+<!doctype html>
+<html>
+  <head>
+    <title>Networks Chatroom</title>
+
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <h2>Networks 4850 Chatroom - Client Side</h2>
+    <button onclick="createUser()"> Create user </button>
+    <button onclick="login()"> Login here</button>
+    <br></br>
+    <button onclick="loginGuest()"> Log In Guest</button>
+    <h3>(You still have to click login as guest on page)<h3>
+
+    <script>
+      //function to redirect user to create user web page
+      function createUser(){
+        window.location.replace("http://localhost:17985/createUser");
+      }
+      //function to redirect user to login web page
+      function login(){
+        window.location.replace("http://localhost:17985/login");
+      }
+      //function to redirect user to chat web page
+      function loginGuest(){
+        //delete username cookie before chat page loads
+        delete_cookie("username");
+        window.location.replace("http://localhost:17985/chat");
+      }
+      //helper function to delete cookies
+      var delete_cookie = function(name) {
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      };
+    </script>
+  </body>
+</html>

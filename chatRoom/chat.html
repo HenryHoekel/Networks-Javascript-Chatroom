@@ -1,0 +1,111 @@
+<!--
+  Henry Hoekel
+  14207985
+  December 2nd, 2017
+  Chat room written for multiple users to use at once with client
+  and server side relations.
+
+  Uses sockets.io
+-->
+
+<!doctype html>
+<html>
+  <head>
+    <title>Networks Chatroom</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <h2>Networks 4850 Chatroom - Client Side</h2>
+    <h1 id="header" style="color:blue;"></h1>
+    <button onclick="loginGuest()"> Log In as Guest </button>
+    <button onclick="logout()"> Logout</button>
+
+    <script>
+      var socket = io();
+      //function to handle messages
+      $(function () {
+        $('form').submit(function(){
+          //send function to server side for message
+          socket.emit('new message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+        socket.on('new message', function(data){
+          $('#messages').append($('<li>').text(data));
+        });
+      });
+
+      //on load check if user is logged in
+      window.onload = function() {
+        var temp = readCookie("username");
+        if(temp!=null){
+          document.getElementById("header").innerText = temp +" Logged in";
+          socket.emit('add user',temp,temp);
+        }
+        else{
+          //cookies already there? -- deleted not using this for testing anymore
+        }
+      };
+
+      //helper function to read username
+      function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+      };
+
+      //function to log in a guest
+      function loginGuest(){
+        if(document.cookie!= null){
+          //testing was here
+        }
+        document.cookie = "username=guest";
+        document.getElementById("header").innerText = "Guest Logged in";
+        //send login guest to server side
+        socket.emit('add user','guest','guest');
+      };
+
+      //function to logout a user
+      function logout(){
+        //delete cookies on client side so client knows logged out
+        //helper function
+        deleteAllCookies();
+        //redirect to main page
+        window.location.replace("http://localhost:17985/");
+      }
+
+      //helper function to delete all cookies from stackoverflow
+      //https://stackoverflow.com/questions/179355/clearing-all-cookies-with-javascript
+      function deleteAllCookies() {
+        var cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i];
+          var eqPos = cookie.indexOf("=");
+          var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+      };
+    </script>
+
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+  </body>
+</html>

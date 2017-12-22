@@ -1,0 +1,39 @@
+<!--
+  Henry Hoekel
+  14207985
+  December 2nd, 2017
+  Chat room written for multiple users to use at once with client
+  and server side relations.
+
+  Uses sockets.io
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create User</title>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <h2>Networks 4850 Chatroom - Create User</h2>
+    <form name="form1">
+      Username: <input type="text" pattern=".{1,32}" id="username" name="username" required></input><br></br>
+      Password: <input type="password" pattern=".{4,8}" name="password" required></input><br></br>
+      <button type="button" onclick="return createUser(document.form1.username,document.form1.password)">Create user</button>
+    </form>
+
+    <script>
+      //function to create a user
+      function createUser(username,password){
+        var socket = io();
+        //send function to server side
+        socket.emit('add user',username.value,password.value);
+        //set cookie to know on client side that user is logged in
+        document.cookie = "username="+username.value;
+        //redirect to chat
+        window.location.replace("http://localhost:17985/chat");
+      };
+    </script>
+  </body>
+</html>
